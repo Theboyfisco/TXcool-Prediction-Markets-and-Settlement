@@ -1,0 +1,31 @@
+{
+  "address": "6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J",
+  "metadata": {
+    "name": "txoracle",
+    "version": "1.5.2",
+    "spec": "0.1.0",
+    "description": "TxODDS TxLINE Data system"
+  },
+  "instructions": [
+    {
+      "name": "subscribe",
+      "discriminator": [254, 28, 191, 138, 156, 179, 183, 53],
+      "accounts": [
+        { "name": "user", "writable": true, "signer": true },
+        { "name": "pricingMatrix", "writable": false },
+        { "name": "tokenMint", "writable": false },
+        { "name": "userTokenAccount", "writable": true },
+        { "name": "tokenTreasuryVault", "writable": true },
+        { "name": "tokenTreasuryPda", "writable": false },
+        { "name": "tokenProgram", "writable": false },
+        { "name": "systemProgram", "writable": false },
+        { "name": "associatedTokenProgram", "writable": false }
+      ],
+      "args": [
+        { "name": "serviceLevelId", "type": "u16" },
+        { "name": "weeks", "type": "u8" }
+      ]
+    }
+  ],
+  "types": []
+}

@@ -1,0 +1,14 @@
+node_modules/
+.next/
+frontend/.next/
+frontend/tsconfig.tsbuildinfo
+.env
+.env.local
+.env.*.local
+dist/
+build/
+target/
+.anchor/
+goalline-program/target/
+.DS_Store
+*.log

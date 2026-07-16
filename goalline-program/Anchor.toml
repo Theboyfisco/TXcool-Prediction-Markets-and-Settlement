@@ -1,0 +1,19 @@
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+goalline_program = "7Ao2A14qmYxnERuFRcGhFqVgA1p55eKr5RLfjhR9gXm8"
+
+[programs.devnet]
+goalline_program = "7Ao2A14qmYxnERuFRcGhFqVgA1p55eKr5RLfjhR9gXm8"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
