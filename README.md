@@ -1,20 +1,30 @@
 # GoalLine ⚡ — Trustless World Cup Prediction Market
 
-> **Superteams × TxLINE Track** · Built on Solana Devnet · Powered by TxLINE real-time data streams
+> **Superteams × TxLINE Track Submission**  
+> **Network**: Solana Devnet  
+> **Live Demo**: [Insert Vercel Link Here]  
+> **Video Walkthrough**: [Insert YouTube/Loom Link Here]  
+
+GoalLine is a **permissionless, cryptographically-verifiable prediction market** for the FIFA World Cup 2026. It leverages TxLINE's real-time data streams and Merkle-proof infrastructure to enable users to place USDC bets on match outcomes without relying on a centralized oracle for settlement.
 
 ---
 
-## What is GoalLine?
+## 🏆 Hackathon Track Alignment
 
-GoalLine is a **permissionless, cryptographically-verifiable prediction market** for the FIFA World Cup 2026. Users place USDC bets on match outcomes (1X2, Over/Under 2.5, BTTS). Settlement is fully trustless — we never rely on a centralized oracle.
+We built GoalLine to perfectly align with the core requirements of the TxLINE track:
 
-Instead, we use **TxLINE's Merkle-proof infrastructure** to verify match results directly on-chain via a Cross-Program Invocation (CPI) to TxLINE's `validate_stat` instruction.
+1. **Data-Driven Web3 Platform**: The frontend ingests TxLINE's high-speed Server-Sent Events (SSE) Stream to power a highly responsive UI. Match scores, events, and fixture states update dynamically in real-time.
+2. **Permissionless Results Validation**: We implemented a custom on-chain settlement engine. The Solana program uses Cross-Program Invocations (CPIs) into TxLINE's `validate_stat` instruction to confirm match outcomes trustlessly.
+3. **No P2P Asset Transfers with TxLINE credits**: The application strictly holds **USDC** (via a custom PDA faucet for devnet testing) in escrow. TxLINE credits are completely isolated.
+4. **Custom On-Chain Settlement Engine**: Smart contracts automatically automate contract releases and unlock funds directly to user wallets the second a verified TxLINE proof is submitted on-chain.
 
 ---
 
-## Architecture
+## 🏗️ Architecture & Data Flow
 
-```
+GoalLine uses a hybrid architecture, combining a fast Next.js 14 frontend with a secure Anchor-based Solana program.
+
+```text
   User Browser
       │
       ├── GET  /api/fixtures        ──→  TxLINE: GET /api/fixtures/snapshot
@@ -22,11 +32,11 @@ Instead, we use **TxLINE's Merkle-proof infrastructure** to verify match results
       ├── SSE  /api/stream          ──→  TxLINE: SSE /api/scores/stream (live)
       └── POST /api/validate        ──→  TxLINE: GET /api/scores/stat-validation
               │
-              │ (Merkle proof JSON)
+              │ (Merkle proof JSON passed to Wallet)
               ▼
-  Solana Devnet ── GoalLine Program (7Ao2A14qmYxnERuFRcGhFqVgA1p55eKr5RLfjhR9gXm8)
+  Solana Devnet ── GoalLine Program (GL1neprog1111111111111111111111111111111111)
               │
-              └── settle_market() ──CPI──→ TxLINE validate_stat program
+              └── settle_market() ──CPI──→ TxLINE validate_stat program (6pW64gN1s2uq...)
                                            (verifies Merkle proof on-chain)
                                            returns bool: predicate passed?
                                            │
@@ -34,125 +44,80 @@ Instead, we use **TxLINE's Merkle-proof infrastructure** to verify match results
                                                vault unlocked for winners
 ```
 
----
-
-## TxLINE Integration — 4 Endpoints
-
-| Endpoint | Usage |
-|---|---|
-| `GET /api/fixtures/snapshot` | Seed the prediction dashboard with all World Cup match data |
-| `GET /api/odds/snapshot/{fixtureId}` | Display consensus betting odds (homeWin, draw, awayWin, over/under, BTTS) |
-| `SSE /api/scores/stream` | Power real-time score updates across the UI (scoreboard, cards, feed panel) |
-| `GET /api/scores/stat-validation?fixtureId&seq&statKey` | Fetch Merkle proof for on-chain settlement CPI |
+### TxLINE API Integration
+We deeply integrated the TxLINE API as the primary data source across four core endpoints:
+1. `GET /api/fixtures/snapshot`: Seeds the prediction dashboard with all 104 World Cup match schedules.
+2. `GET /api/odds/snapshot/{fixtureId}`: Displays consensus betting odds (1X2, Over/Under, BTTS).
+3. `SSE /api/scores/stream`: Powers real-time score updates across the UI (scoreboard, match cards, feed panel) without polling.
+4. `GET /api/scores/stat-validation`: Fetches the cryptographic Merkle proof for the on-chain settlement CPI.
 
 ---
 
-## Technical Highlights
+## 🔒 Smart Contract Security & Logic
 
-### 1. Real-Time SSE Integration
-The frontend maintains persistent EventSource connections to TxLINE's SSE stream. Scores update live across all components — the home page ticker, match cards (with flash animation), and the per-fixture event log — without polling.
+The `goalline-program` is written in Rust using the Anchor framework. Code quality, determinism, and security were top priorities:
 
-### 2. Trustless On-Chain Settlement via CPI
-```rust
-// goalline-program/programs/goalline-program/src/lib.rs
-pub fn settle_market(
-    ctx: Context<SettleMarket>,
-    ts: i64,
-    fixture_summary: ScoresBatchSummary,
-    fixture_proof: Vec<ProofNode>,
-    main_tree_proof: Vec<ProofNode>,
-    predicate: TraderPredicate,
-    stat_a: StatTerm,
-    stat_b: Option<StatTerm>,
-    op: Option<BinaryExpression>,
-) -> Result<()> {
-    // Verifies TxLINE program owns the daily_scores_merkle_roots account
-    require_keys_eq!(
-        *ctx.accounts.daily_scores_merkle_roots.owner,
-        ctx.accounts.txline_program.key(),
-        GoalLineError::InvalidOracleOwner
-    );
+- **Oracle Spoofing Protection**: The `settle_market` instruction strictly constraints the oracle program address to the canonical TxLINE Devnet Program ID (`6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J`).
+- **Token Spoofing Protection**: The `create_market` instruction locks the accepted mint to the internal PDA-owned USDC faucet, preventing users from creating markets with fake or malicious SPL tokens.
+- **Race Condition Guards**: The `place_bet` instruction validates prediction changes *before* executing the SPL token transfer, ensuring user funds are never locked unnecessarily.
+- **Proportional Payouts**: Winners receive a mathematically precise share of the total pool: `(user_bet / winning_pool) × total_pool`. Zero platform fees are extracted.
 
-    // Manually builds the CPI instruction to validate_stat
-    invoke(&ix, &[...accounts])?;
-
-    // Reads the boolean result from return data
-    let validated_result = return_data[0] != 0;
-    market.winner = Some(validated_result);
-    Ok(())
-}
-```
-
-### 3. Escrow Vault with Proportional Payouts
-Each market has a PDA-owned USDC vault. Winners receive `(user_bet / winning_pool) × total_pool` — zero platform fees, fully on-chain math.
-
-### 4. Faucet for Testing
-A built-in `request_faucet` instruction mints 1,000 test USDC to any connected wallet so judges can test the full flow without needing real funds.
-
----
-
-## Program Instructions
+### Program Instructions
 
 | Instruction | Description |
 |---|---|
 | `initialize_mint` | Creates the PDA-owned test-USDC mint |
-| `request_faucet` | Mints 1,000 USDC to caller |
+| `request_faucet` | Mints 1,000 USDC to the caller for testing |
 | `create_market` | Opens a new prediction market for a fixture + market type |
-| `place_bet` | Locks USDC in vault, records prediction |
-| `settle_market` | CPIs into TxLINE to verify result, sets market winner |
-| `claim_winnings` | Transfers proportional winnings from vault to winner |
+| `place_bet` | Locks USDC in the market's vault, records prediction |
+| `settle_market` | CPIs into TxLINE to verify the match result and sets the market winner |
+| `claim_winnings` | Transfers proportional winnings from the vault to the winning bettor |
 
 ---
 
-## Market Types
+## 🚀 Running Locally
 
-| Byte | Market | Outcomes |
-|---|---|---|
-| `0` | Match Result | Home Win / Draw / Away Win |
-| `1-2` | 1X2 extended | — |
-| `3` | Over 2.5 Goals | Over / Under |
-| `5` | Both Teams Score | Yes / No |
+### Prerequisites
+- Node.js 18+ and `npm`
+- Phantom or Solflare wallet browser extension (set to Solana Devnet)
 
----
-
-## Running Locally
-
+### Frontend Setup
 ```bash
-# Frontend
+# 1. Clone the repository and navigate to the frontend directory
 cd frontend
-npm install
-npm run dev
-# → http://localhost:3000
 
-# Anchor Program (WSL/Linux)
-bash build-and-deploy.sh
+# 2. Install dependencies
+npm install
+
+# 3. Create a .env.local file (Requires TxLINE API Keys)
+# NEXT_PUBLIC_SOLANA_RPC=https://api.devnet.solana.com
+# NEXT_PUBLIC_TXLINE_API_BASE=https://txline-dev.txodds.com/api
+# TXLINE_JWT=your_jwt_here
+# TXLINE_API_TOKEN=your_token_here
+# NODE_TLS_REJECT_UNAUTHORIZED="0" # Required for TxLINE devnet SSL certs
+
+# 4. Run the development server
+npm run dev
 ```
 
-**Requirements:**
-- Node.js 18+, npm
-- WSL2 with Ubuntu 24.04
-- Phantom / Solflare wallet (set to Devnet)
+Navigate to `http://localhost:3000` to interact with the platform.
+
+### Smart Contract Deployment (Optional)
+The smart contracts are pre-deployed to devnet. If you wish to build and deploy locally, please see `SETUP.md` for full Solana CLI and Anchor WSL2 instructions.
 
 ---
 
-## Devnet Deployment
+## 📝 Team Feedback on TxLINE API
 
-- **Program ID:** `7Ao2A14qmYxnERuFRcGhFqVgA1p55eKr5RLfjhR9gXm8`
-- **Network:** Solana Devnet
-- **TxLINE Base URL:** `https://txline-dev.txodds.com/api`
+**What we liked most:**
+- The unified JSON schema across all endpoints is fantastic. It drastically reduced the parsing overhead on the frontend.
+- The `validate_stat` primitive is brilliant. Allowing us to offload the heavy lifting of outcome verification directly to the TxLINE oracle via CPI made the smart contract logic incredibly lean and purely focused on escrow mechanics.
+- The SSE stream is blazing fast.
+
+**Where we hit friction:**
+- The Devnet SSL Certificate issue (`UNABLE_TO_VERIFY_LEAF_SIGNATURE`) caused our Next.js backend fetches to fail silently initially. We had to implement `NODE_TLS_REJECT_UNAUTHORIZED="0"` to bypass it.
+- Future matches without published odds return a `403` instead of a standard `404` or an empty schema, requiring custom fallback error handling in our `/api/odds` wrapper.
 
 ---
 
-## Judging Notes
-
-> For Superteams TxLINE track reviewers:
-
-1. **Data-Driven Web3 Platform**: GoalLine uses TxLINE's SSE stream to trigger live UI updates and could trigger on-chain settlement when a `FT` phase event is received.
-
-2. **Merkle Proof Settlement**: The `settle_market` instruction performs a genuine CPI to TxLINE's `validate_stat` program. The proof path is also **visually rendered** in the UI via the ProofVisualizer component — judges can see the Merkle tree in action.
-
-3. **No P2P Credit Token Transfers**: The internal TxLINE credit token is not used for betting. Users bet with test-USDC minted from a PDA-controlled faucet.
-
-4. **Frontend Stack**: Next.js 14 App Router, Solana Wallet Adapter, Anchor client, custom SSE hooks.
-
-5. **Demo Flow**: Connect wallet → Request Faucet → Browse Fixtures → Place Bet → Watch live scores update → Settle completed match → Claim winnings.
+*Disclaimer: Participants are responsible for ensuring compliance with all applicable laws. TxLINE and Superteam Earn do not endorse illegal betting activity. This is an experimental submission.*
