@@ -5,7 +5,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import DevnetFaucet from "./DevnetFaucet";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useState, useEffect } from "react";
-import { Activity, Zap } from "lucide-react";
+import { Activity, Zap, Menu, X } from "lucide-react";
 import { useSSEStream } from "@/hooks/useSSEStream";
 
 export default function Navbar() {
@@ -14,6 +14,7 @@ export default function Navbar() {
 
   const { connected: sseConnected, lastEvent } = useSSEStream();
   const [mounted, setMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -91,12 +92,61 @@ export default function Navbar() {
           </div>
 
           {/* Right: Wallet */}
-          <div className="flex items-center gap-3 shrink-0 min-w-[150px] justify-end">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-[120px] justify-end">
             {mounted && connected && <DevnetFaucet />}
-            {mounted ? <WalletMultiButton /> : <div className="h-[48px] w-[150px] bg-white/5 rounded-xl animate-pulse" />}
+            {mounted ? <WalletMultiButton className="!h-9 !px-3 sm:!h-12 sm:!px-6 !text-xs sm:!text-sm" /> : <div className="h-9 sm:h-[48px] w-[100px] sm:w-[150px] bg-white/5 rounded-xl animate-pulse" />}
+            <button 
+              className="md:hidden p-1.5 text-gray-400 hover:text-white"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed top-[88px] left-0 right-0 bottom-0 bg-[#050811]/95 backdrop-blur-3xl z-40 md:hidden animate-fade-in border-t border-white/[0.05] p-6 space-y-6">
+          <Link
+            href="/demo"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-extrabold text-green-400 bg-green-500/10 border border-green-500/25 px-4 py-3 rounded-xl flex items-center justify-center gap-2"
+          >
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-ping" />
+            Judge Demo
+          </Link>
+          <div className="flex flex-col gap-4">
+            <Link href="/receipt/demo" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-gray-300 hover:text-white px-2 py-2 border-b border-white/[0.05]">
+              Demo Receipt
+            </Link>
+            <Link href="/txline-feedback" onClick={() => setMobileMenuOpen(false)} className="text-sm font-bold text-gray-300 hover:text-white px-2 py-2 border-b border-white/[0.05]">
+              TxLINE Notes
+            </Link>
+          </div>
+
+          <div className="space-y-4 pt-4">
+            {/* TxLINE Connection */}
+            <div
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold border ${
+                sseConnected
+                  ? "bg-green-500/10 border-green-500/25 text-green-400"
+                  : "bg-red-500/10 border-red-500/25 text-red-400"
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${sseConnected ? "bg-green-400 animate-pulse" : "bg-red-400"}`} />
+              <Activity className="w-4 h-4" />
+              <span>TxLINE {sseConnected ? "Live" : "Offline"}</span>
+            </div>
+
+            {/* Network badge */}
+            <div className="flex items-center justify-center bg-amber-500/10 border border-amber-500/25 px-4 py-3 rounded-xl text-sm text-amber-400 font-semibold uppercase tracking-wider">
+              <span className="w-2 h-2 bg-amber-400 rounded-full mr-2 animate-pulse" />
+              Devnet
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -279,7 +279,7 @@ export default function MatchDetail() {
           </div>
 
           {/* Teams */}
-          <div className="flex items-center justify-center gap-6 sm:gap-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
             {/* Home */}
             <div className="flex-1 flex flex-col items-center gap-3 text-center">
               <TeamLogo team={fixture.homeTeam} className="w-24 h-16 sm:w-32 sm:h-24 mb-2" />
@@ -299,7 +299,7 @@ export default function MatchDetail() {
               ) : (
                 <div className="text-center">
                   <h1
-                    className={`text-6xl sm:text-8xl font-extrabold tracking-tighter tabular-nums transition-all duration-300 ${
+                    className={`text-5xl sm:text-8xl font-extrabold tracking-tighter tabular-nums transition-all duration-300 ${
                       scoreFlash ? "text-green-400 text-glow-green" : "text-white"
                     }`}
                   >
@@ -349,7 +349,7 @@ export default function MatchDetail() {
                     Standard
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-sm">
                   {[
                     { label: "Home", value: odds.homeWin, outcome: "Home Win", type: 0 },
                     { label: "Draw", value: odds.draw, outcome: "Draw", type: 1 },
@@ -383,7 +383,7 @@ export default function MatchDetail() {
                     Goals
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {[
                     { label: "Over 2.5", value: odds.over25, outcome: "Over 2.5", type: 3 },
                     { label: "Under 2.5", value: odds.under25, outcome: "Under 2.5", type: 4 },
@@ -416,7 +416,7 @@ export default function MatchDetail() {
                     BTTS
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-2 max-w-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-xs">
                   {[
                     { label: "Yes", value: odds.bttsYes, outcome: "BTTS Yes", type: 5 },
                     { label: "No", value: odds.bttsNo, outcome: "BTTS No", type: 6 },

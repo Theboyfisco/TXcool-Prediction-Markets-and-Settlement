@@ -103,7 +103,7 @@ export default function MatchCard({ fixture, index = 0 }: MatchCardProps) {
   return (
     <Link href={`/match/${fixture.fixtureId}`}>
       <div
-        className={`glass glass-hover rounded-2xl p-5 h-[190px] flex flex-col justify-between cursor-pointer relative overflow-hidden group animate-fade-in-up ${delayClass} border border-white/[0.05]`}
+        className={`glass glass-hover rounded-2xl p-4 sm:p-5 h-[190px] flex flex-col justify-between cursor-pointer relative overflow-hidden group animate-fade-in-up ${delayClass} border border-white/[0.05]`}
       >
         {/* Background glow on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-purple-500/0 group-hover:from-green-500/5 group-hover:to-purple-500/5 transition-all duration-500 pointer-events-none" />
@@ -125,8 +125,8 @@ export default function MatchCard({ fixture, index = 0 }: MatchCardProps) {
         <div className="grid grid-cols-7 items-center my-1 relative z-10">
           {/* Home */}
           <div className="col-span-3 flex flex-col items-center gap-1 text-center">
-            <TeamLogo team={fixture.homeTeam} className="w-10 h-7" />
-            <span className="text-xs font-bold text-gray-200 leading-tight line-clamp-1 max-w-[80px]">
+            <TeamLogo team={fixture.homeTeam} className="w-8 h-6 sm:w-10 sm:h-7" />
+            <span className="text-[10px] sm:text-xs font-bold text-gray-200 leading-tight line-clamp-1 max-w-[80px]">
               {fixture.homeTeam}
             </span>
           </div>
@@ -148,8 +148,8 @@ export default function MatchCard({ fixture, index = 0 }: MatchCardProps) {
 
           {/* Away */}
           <div className="col-span-3 flex flex-col items-center gap-1 text-center">
-            <TeamLogo team={fixture.awayTeam} className="w-10 h-7" />
-            <span className="text-xs font-bold text-gray-200 leading-tight line-clamp-1 max-w-[80px]">
+            <TeamLogo team={fixture.awayTeam} className="w-8 h-6 sm:w-10 sm:h-7" />
+            <span className="text-[10px] sm:text-xs font-bold text-gray-200 leading-tight line-clamp-1 max-w-[80px]">
               {fixture.awayTeam}
             </span>
           </div>

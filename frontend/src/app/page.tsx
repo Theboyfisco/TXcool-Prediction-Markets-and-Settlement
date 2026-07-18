@@ -150,7 +150,7 @@ export default function Home() {
       <LiveTicker fixtures={fixtures} />
 
       {/* Hero Section */}
-      <div className="relative py-16 sm:py-24 overflow-hidden">
+      <div className="relative py-10 sm:py-24 overflow-hidden">
         {/* Background glow orbs */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -top-20 right-0 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -164,7 +164,7 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl font-black tracking-tight leading-[1.05] mb-6">
+          <h1 className="text-4xl sm:text-7xl font-black tracking-tight leading-[1.05] mb-6">
             Predict the{" "}
             <span className="gradient-text">World Cup.</span>
             <br />
@@ -197,7 +197,7 @@ export default function Home() {
           </div>
 
           {/* Stats strip */}
-          <div className="flex flex-wrap gap-4">
+          <div className="flex gap-4 overflow-x-auto sm:flex-wrap pb-2 sm:pb-0 scrollbar-hide">
             {[
               { label: "Live Matches", value: liveCount, color: "text-red-400", dot: "bg-red-400" },
               { label: "Total Fixtures", value: fixtures.length, color: "text-white", dot: "bg-green-400" },
@@ -263,7 +263,7 @@ export default function Home() {
                 <p className="text-xs text-gray-600 mt-0.5">Click any match to place a prediction</p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-2 sm:pb-0 scrollbar-hide">
                 {(["ALL", "LIVE", "NS", "FT"] as const).map((f) => (
                   <button
                     key={f}

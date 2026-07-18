@@ -90,7 +90,7 @@ export default function BetModal({
   return (
     <div className="fixed inset-0 bg-[#050811]/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
       <div
-        className="glass rounded-3xl w-full max-w-sm border border-white/[0.08] relative overflow-hidden animate-fade-in-up"
+        className="glass rounded-3xl w-full max-w-[calc(100vw-2rem)] sm:max-w-sm border border-white/[0.08] relative overflow-hidden animate-fade-in-up"
         style={{ boxShadow: "0 0 60px rgba(0,255,135,0.08), 0 24px 64px rgba(0,0,0,0.6)" }}
       >
         {/* Top glow */}
