@@ -1,4 +1,4 @@
-# GoalLine ⚡ — Trustless World Cup Prediction Market
+# FairPlay ⚡ — Trustless World Cup Prediction Market
 
 > **Superteams × TxLINE Track Submission**  
 > **Network**: Solana Devnet  
@@ -6,13 +6,13 @@
 > **Demo Video**:https://www.loom.com/share/38c090a4ae6340dd8e600aa5cdd3dd11/ 
 
 
-GoalLine is a **permissionless, cryptographically-verifiable prediction market** for the FIFA World Cup 2026. It leverages TxLINE's real-time data streams and Merkle-proof infrastructure to enable users to place USDC bets on match outcomes without relying on a centralized oracle for settlement.
+FairPlay is a **permissionless, cryptographically-verifiable prediction market** for the FIFA World Cup 2026. It leverages TxLINE's real-time data streams and Merkle-proof infrastructure to enable users to place USDC bets on match outcomes without relying on a centralized oracle for settlement.
 
 ---
 
 ## 🏆 Hackathon Track Alignment
 
-We built GoalLine to perfectly align with the core requirements of the TxLINE track:
+We built FairPlay to perfectly align with the core requirements of the TxLINE track:
 
 1. **Data-Driven Web3 Platform**: The frontend ingests TxLINE's high-speed Server-Sent Events (SSE) Stream to power a highly responsive UI. Match scores, events, and fixture states update dynamically in real-time.
 2. **Permissionless Results Validation**: We implemented a custom on-chain settlement engine. The Solana program uses Cross-Program Invocations (CPIs) into TxLINE's `validate_stat` instruction to confirm match outcomes trustlessly.
@@ -23,7 +23,7 @@ We built GoalLine to perfectly align with the core requirements of the TxLINE tr
 
 ## 🏗️ Architecture & Data Flow
 
-GoalLine uses a hybrid architecture, combining a fast Next.js 14 frontend with a secure Anchor-based Solana program.
+FairPlay uses a hybrid architecture, combining a fast Next.js 14 frontend with a secure Anchor-based Solana program.
 
 ```text
   User Browser
@@ -35,7 +35,7 @@ GoalLine uses a hybrid architecture, combining a fast Next.js 14 frontend with a
               │
               │ (Merkle proof JSON passed to Wallet)
               ▼
-  Solana Devnet ── GoalLine Program (GL1neprog1111111111111111111111111111111111)
+  Solana Devnet ── FairPlay Program (GL1neprog1111111111111111111111111111111111)
               │
               └── settle_market() ──CPI──→ TxLINE validate_stat program (6pW64gN1s2uq...)
                                            (verifies Merkle proof on-chain)
@@ -56,7 +56,7 @@ We deeply integrated the TxLINE API as the primary data source across four core 
 
 ## 🔒 Smart Contract Security & Logic
 
-The `goalline-program` is written in Rust using the Anchor framework. Code quality, determinism, and security were top priorities:
+The `FairPlay-program` is written in Rust using the Anchor framework. Code quality, determinism, and security were top priorities:
 
 - **Oracle Spoofing Protection**: The `settle_market` instruction strictly constraints the oracle program address to the canonical TxLINE Devnet Program ID (`6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J`).
 - **Token Spoofing Protection**: The `create_market` instruction locks the accepted mint to the internal PDA-owned USDC faucet, preventing users from creating markets with fake or malicious SPL tokens.
