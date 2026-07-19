@@ -17,9 +17,9 @@ const MOCK_FIXTURES = [
     fixtureId: 18257739,
     homeTeam: "Spain",
     awayTeam: "Argentina",
-    homeScore: 0,
+    homeScore: 1,
     awayScore: 0,
-    gamePhase: "NS" as const,
+    gamePhase: "LIVE" as const,
     competition: "FIFA World Cup 2026",
     competitionId: 72,
     kickoff: new Date(1784487600000).toISOString(), // Real StartTime from TxLINE
