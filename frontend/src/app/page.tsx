@@ -155,69 +155,80 @@ export default function Home() {
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -top-20 right-0 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-3xl animate-fade-in-up">
-          {/* Tag */}
-          <div className="inline-flex items-center gap-2 glass-sm border border-white/[0.06] rounded-full px-3 py-1.5 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-widest">
-              TxLINE × Solana · Superteams 2026
-            </span>
-          </div>
+        <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="max-w-3xl animate-fade-in-up">
+            {/* Tag */}
+            <div className="inline-flex items-center gap-2 glass-sm border border-white/[0.06] rounded-full px-3 py-1.5 mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-widest">
+                TxLINE × Solana · Superteams 2026
+              </span>
+            </div>
 
-          <h1 className="text-4xl sm:text-7xl font-black tracking-tight leading-[1.05] mb-6">
-            Predict the{" "}
-            <span className="gradient-text">World Cup.</span>
-            <br />
-            Settle on{" "}
-            <span className="text-white">Solana.</span>
-          </h1>
+            <h1 className="text-4xl sm:text-7xl font-black tracking-tight leading-[1.05] mb-6">
+              Predict the{" "}
+              <span className="gradient-text">World Cup.</span>
+              <br />
+              Settle on{" "}
+              <span className="text-white">Solana.</span>
+            </h1>
 
-          <p className="text-gray-400 text-base sm:text-lg leading-relaxed max-w-2xl mb-8">
-            A trustless prediction market powered by{" "}
-            <span className="text-green-400 font-semibold">TxLINE's real-time data streams</span> and
-            cryptographic Merkle proofs anchored on-chain. No centralized oracles. No trust required.
-          </p>
+            <p className="text-gray-400 text-base sm:text-lg leading-relaxed max-w-2xl mb-8">
+              A trustless prediction market powered by{" "}
+              <span className="text-green-400 font-semibold">TxLINE's real-time data streams</span> and
+              cryptographic Merkle proofs anchored on-chain. No centralized oracles. No trust required.
+            </p>
 
-          {/* CTA buttons */}
-          <div className="flex flex-wrap gap-3 mb-10">
-            <Link
-              href={fixtures.length > 0 ? `/match/${fixtures[0]?.fixtureId}` : "#matches"}
-              className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm"
-            >
-              <Zap className="w-4 h-4" />
-              Place a Bet
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <a
-              href="#how-it-works"
-              className="btn-ghost inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm"
-            >
-              How It Works
-            </a>
-          </div>
-
-          {/* Stats strip */}
-          <div className="flex gap-4 overflow-x-auto sm:flex-wrap pb-2 sm:pb-0 scrollbar-hide">
-            {[
-              { label: "Live Matches", value: liveCount, color: "text-red-400", dot: "bg-red-400" },
-              { label: "Total Fixtures", value: fixtures.length, color: "text-white", dot: "bg-green-400" },
-              { label: "Active Markets", value: fixtures.length * 3, color: "text-purple-400", dot: "bg-purple-400" },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="glass-sm rounded-2xl px-5 py-3 flex items-center gap-3 border border-white/[0.05]"
+            {/* CTA buttons */}
+            <div className="flex flex-wrap gap-3 mb-10">
+              <Link
+                href={fixtures.length > 0 ? `/match/${fixtures[0]?.fixtureId}` : "#matches"}
+                className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm"
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${stat.dot} ${stat.value > 0 && stat.dot === "bg-red-400" ? "animate-pulse" : ""}`} />
-                <div>
-                  <div className={`text-2xl font-black ${stat.color}`}>
-                    <AnimatedNumber value={stat.value} />
-                  </div>
-                  <div className="text-[10px] text-gray-600 uppercase tracking-wider font-bold">
-                    {stat.label}
+                <Zap className="w-4 h-4" />
+                Place a Bet
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <a
+                href="#how-it-works"
+                className="btn-ghost inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-sm"
+              >
+                How It Works
+              </a>
+            </div>
+
+            {/* Stats strip */}
+            <div className="flex gap-4 overflow-x-auto sm:flex-wrap pb-2 sm:pb-0 scrollbar-hide">
+              {[
+                { label: "Live Matches", value: liveCount, color: "text-red-400", dot: "bg-red-400" },
+                { label: "Total Fixtures", value: fixtures.length, color: "text-white", dot: "bg-green-400" },
+                { label: "Active Markets", value: fixtures.length * 3, color: "text-purple-400", dot: "bg-purple-400" },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="glass-sm rounded-2xl px-5 py-3 flex items-center gap-3 border border-white/[0.05]"
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${stat.dot} ${stat.value > 0 && stat.dot === "bg-red-400" ? "animate-pulse" : ""}`} />
+                  <div>
+                    <div className={`text-2xl font-black ${stat.color}`}>
+                      <AnimatedNumber value={stat.value} />
+                    </div>
+                    <div className="text-[10px] text-gray-600 uppercase tracking-wider font-bold">
+                      {stat.label}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          <div className="relative hidden lg:flex justify-center items-center animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
+            <div className="absolute w-full h-[120%] bg-gradient-to-tr from-green-500/10 to-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
+            <img 
+              src="/hero-graphic.png" 
+              alt="Solana TxLINE Prediction Market"
+              className="relative w-full max-w-[480px] object-contain drop-shadow-[0_0_50px_rgba(0,255,135,0.15)] animate-float"
+            />
           </div>
         </div>
       </div>
